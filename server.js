@@ -1,3 +1,4 @@
+// backend/server.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -8,14 +9,12 @@ const profileRoutes = require('./routes/profile');
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Routes d'authentification
+// Routes
 app.use('/api/auth', authRoutes);
-
-// Route pour le profil (les endpoints seront /api/profile)
 app.use('/api', profileRoutes);
 
 const PORT = process.env.PORT || 5000;
