@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 
@@ -13,6 +14,9 @@ app.use(express.json());
 
 // Routes d'authentification
 app.use('/api/auth', authRoutes);
+
+// Route pour le profil
+app.use('/api', profileRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
