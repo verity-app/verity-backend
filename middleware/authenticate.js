@@ -1,19 +1,22 @@
 // backend/middleware/authenticate.js
 const jwt = require('jsonwebtoken');
 
-const authenticate = (req, res, next) => {
-  // Récupération du token dans l'en-tête Authorization (format : "Bearer <token>")
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+module.exports = (req, res, next) => {
+  // Le token doit être envoyé dans l'en-tête Authorization sous la forme "Bearer <token>"
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: "Accès non autorisé : aucun token fourni" });
+  }
+  const token = authHeader.split(' ')[1];
   if (!token) {
-    return res.status(401).json({ message: "Accès non autorisé" });
+    return res.status(401).json({ message: "Accès non autorisé : token invalide" });
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId; // On stocke l'ID de l'utilisateur dans la requête
+    // Ajoutez l'ID de l'utilisateur à la requête pour utilisation ultérieure
+    req.userId = decoded.userId;
     next();
-  } catch (error) {
-    return res.status(401).json({ message: "Token invalide" });
+  } catch (err) {
+    return res.status(401).json({ message: "Accès non autorisé : token invalide" });
   }
 };
-
-module.exports = authenticate;

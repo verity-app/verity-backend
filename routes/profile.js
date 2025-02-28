@@ -5,22 +5,30 @@ const authenticate = require('../middleware/authenticate');
 
 const router = express.Router();
 
-// Route pour mettre à jour le profil de l'utilisateur connecté
-// Méthode PUT sur "/api/profile"
+// Récupérer les informations du profil de l'utilisateur connecté
+router.get('/profile', authenticate, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Erreur lors de la récupération du profil:", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
+// Mettre à jour le profil de l'utilisateur connecté
 router.put('/profile', authenticate, async (req, res) => {
   try {
-    const userId = req.userId;
-    // On récupère les champs à mettre à jour depuis le corps de la requête
     const { name, email } = req.body;
-
-    // Vous pouvez ajouter ici des validations supplémentaires si nécessaire
-
-    // Mise à jour de l'utilisateur dans la base de données
+    // Mettez à jour uniquement les champs autorisés
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      req.userId,
       { name, email },
-      { new: true, runValidators: true } // new: retourne le document mis à jour
-    );
+      { new: true, runValidators: true }
+    ).select('-password');
 
     if (!updatedUser) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });

@@ -15,7 +15,7 @@ app.use(express.json());
 // Routes d'authentification
 app.use('/api/auth', authRoutes);
 
-// Route pour le profil
+// Route pour le profil (les endpoints seront /api/profile)
 app.use('/api', profileRoutes);
 
 const PORT = process.env.PORT || 5000;
